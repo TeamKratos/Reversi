@@ -19,7 +19,7 @@ public class TestPlayerV1 implements ReversiPlayer
 	private long					timeLimit		= 0;
 	private long					timeout			= 0;
 	private static int				MAXDEPTH		= 30;
-	private int test = 0;
+	
 
 	/**
 	 * Alle mˆglichen Z¸ge werden in diesem Array gespeichert.
