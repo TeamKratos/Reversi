@@ -19,7 +19,6 @@ public class TestPlayerV1 implements ReversiPlayer
 	private long timeLimit = 0;
 	private long timeout = 0;
 	private static int MAXDEPTH = 30;
-	private int[][]					lookUpTable		= new int[8][8];
 	/**
 	 * Alle mˆglichen Z¸ge werden in diesem Array gespeichert.
 	 */
@@ -61,23 +60,17 @@ public class TestPlayerV1 implements ReversiPlayer
 		timeout = System.currentTimeMillis() + timeLimit - 10;
 		Move next = new Move(null,Integer.MIN_VALUE);
 		try{
-		
 			for(int i=0; i<MAXDEPTH;i++){
 				System.out.println("V1 Depth:"+i);
 				next = max(gb,Integer.MIN_VALUE,Integer.MAX_VALUE,i,null);
-				
-				
 			}
 		}
 		catch (TimeOutException e){
-			
 		}
-		
 		return next.coord;
 	} 
 	
 	private Move max(GameBoard gb, int alpha, int beta, int depth, Coordinates last) throws TimeOutException{
-		
 		if(System.currentTimeMillis() >= timeout) throw new TimeOutException();
 		if (depth == 0) return new Move(null,eval(gb,color,last));
 		
@@ -103,10 +96,8 @@ public class TestPlayerV1 implements ReversiPlayer
 				best.coord = coord;
 				best.value = result.value;
 			}
-			
 			if(alpha >= beta) break;
 		}
-		
 		return new Move(best.coord,alpha);
 	}
 	
@@ -137,16 +128,10 @@ public class TestPlayerV1 implements ReversiPlayer
 			
 			if(beta <= alpha) break;
 		}
-		
 		return new Move(best.coord,beta);
 	}
 	int eval(GameBoard gb, int playerColor, Coordinates move){
-		
 		return gb.countStones(color);
-		
-		
-		//if(move == null) return 0;
-		//return (lookUpTable[move.getRow() - 1][move.getCol() - 1]);
 	}
 	
 	private ArrayList<Coordinates> getCurrentPossibleMoves(GameBoard gb, int pColor)
@@ -172,19 +157,6 @@ public class TestPlayerV1 implements ReversiPlayer
 			}
 		}
 	}
-	private void fillLookUpTable()
-	{
-		 lookUpTable = new int[][] { { 99, -32, 8, 6, 6, 8, -32, 99 }, { -32,
-		 -32, -4, -3, -3, -4, -32, -32 },
-		 { 8, -4, 7, 4, 4, 7, -4, 8 }, { 6, -3, 4, 0, 0, 4, -3, 6 }, { 6, -3,
-		 4, 0, 0, 4, -3, 6 },
-		 { 8, -4, 7, 4, 4, 7, -4, 8 }, { -32, -32, -4, -3, -3, -4, -32, -32 },
-		 { 99, -32, 8, 6, 6, 8, -32, 99 } };
-//		lookUpTable = new int[][] { { 99, -100, 0, 0, 0, 0, -100, 99 }, { -100, -100, 0, 0, 0, 0, -100, -100 },
-//				{ 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0 },
-//				{ 0, 0, 0, 0, 0, 0, 0, 0 }, { -100, -100, 0, 0, 0, 0, -100, -100 },
-//				{ 99, -100, 0, 0, 0, 0, -100, 99 } };
-	}
 	class Move
 	{
 		public Coordinates	coord;
@@ -194,9 +166,7 @@ public class TestPlayerV1 implements ReversiPlayer
 		{
 			this.coord = coord;
 			this.value = value;
-
 		}
-
 	}
 	class TimeOutException extends Exception
 	{
