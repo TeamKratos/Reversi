@@ -15,18 +15,19 @@ public class TestPlayerV1 implements ReversiPlayer
 	/**
 	 * Die Farbe des Spielers.
 	 */
-	private int  color = 0;
-	private long timeLimit = 0;
-	private long timeout = 0;
-	private static int MAXDEPTH = 30;
+	private int						color			= 0;
+	private long					timeLimit		= 0;
+	private long					timeout			= 0;
+	private static int				MAXDEPTH		= 30;
+	private int 					notused			= 0;
 	/**
 	 * Alle mˆglichen Z¸ge werden in diesem Array gespeichert.
 	 */
-	private ArrayList<Coordinates> possibleMoves=new ArrayList<Coordinates>();
-	
+	private ArrayList<Coordinates>	possibleMoves	= new ArrayList<Coordinates>();
+
 	/**
-	 * Konstruktor, der bei der Gr√ºndung eines RandomPlayer eine Meldung auf den
-	 * Bildschirm ausgibt.
+	 * Konstruktor, der bei der Gr√ºndung eines RandomPlayer eine Meldung auf
+	 * den Bildschirm ausgibt.
 	 */
 	public TestPlayerV1()
 	{
@@ -45,8 +46,7 @@ public class TestPlayerV1 implements ReversiPlayer
 		if (color == GameBoard.RED)
 		{
 			System.out.println("GreedyPlayer ist Spieler RED.");
-		}
-		else if (color == GameBoard.GREEN)
+		} else if (color == GameBoard.GREEN)
 		{
 			System.out.println("GreedyPlayer ist Spieler GREEN.");
 		}
@@ -58,82 +58,100 @@ public class TestPlayerV1 implements ReversiPlayer
 	public Coordinates nextMove(GameBoard gb)
 	{
 		timeout = System.currentTimeMillis() + timeLimit - 10;
-		Move next = new Move(null,Integer.MIN_VALUE);
-		try{
-			for(int i=0; i<MAXDEPTH;i++){
-				System.out.println("V1 Depth:"+i);
-				next = max(gb,Integer.MIN_VALUE,Integer.MAX_VALUE,i,null);
+		Move next = new Move(null, Integer.MIN_VALUE);
+		try
+		{
+			for (int i = 0; i < MAXDEPTH; i++)
+			{
+				System.out.println("V1 Depth:" + i);
+				next = max(gb, Integer.MIN_VALUE, Integer.MAX_VALUE, i, null);
 			}
-		}
-		catch (TimeOutException e){
+		} catch (TimeOutException e)
+		{
 		}
 		return next.coord;
-	} 
-	
-	private Move max(GameBoard gb, int alpha, int beta, int depth, Coordinates last) throws TimeOutException{
-		if(System.currentTimeMillis() >= timeout) throw new TimeOutException();
-		if (depth == 0) return new Move(null,eval(gb,color,last));
-		
-		ArrayList<Coordinates> currentPossibleMoves = getCurrentPossibleMoves(gb.clone(),color);
-		
-		if(currentPossibleMoves.isEmpty()){
-			if(gb.isMoveAvailable(Utils.other(color))){
-				return new Move(null,(min(gb,alpha,beta,depth -1,null)).value);
-			}
-			else
-				return new Move(null,eval(gb,color,null));
+	}
+
+	private Move max(GameBoard gb, int alpha, int beta, int depth, Coordinates last) throws TimeOutException
+	{
+		if (System.currentTimeMillis() >= timeout)
+			throw new TimeOutException();
+		if (depth == 0)
+			return new Move(null, eval(gb, color, last));
+
+		ArrayList<Coordinates> currentPossibleMoves = getCurrentPossibleMoves(gb.clone(), color);
+
+		if (currentPossibleMoves.isEmpty())
+		{
+			if (gb.isMoveAvailable(Utils.other(color)))
+			{
+				return new Move(null, (min(gb, alpha, beta, depth - 1, null)).value);
+			} else
+				return new Move(null, eval(gb, color, null));
 		}
-		Move best = new Move(null,Integer.MIN_VALUE);
-		for(Coordinates coord: currentPossibleMoves){
+		Move best = new Move(null, Integer.MIN_VALUE);
+		for (Coordinates coord : currentPossibleMoves)
+		{
 			GameBoard newGB = gb.clone();
 			newGB.checkMove(color, coord);
 			newGB.makeMove(color, coord);
-			
-			Move result = min(newGB,alpha,beta,depth-1,coord);
+
+			Move result = min(newGB, alpha, beta, depth - 1, coord);
 			alpha = Math.max(alpha, result.value);
-			
-			if(result.value > best.value){
+
+			if (result.value > best.value)
+			{
 				best.coord = coord;
 				best.value = result.value;
 			}
-			if(alpha >= beta) break;
+			if (alpha >= beta)
+				break;
 		}
-		return new Move(best.coord,alpha);
+		return new Move(best.coord, alpha);
 	}
-	
-	private Move min(GameBoard gb, int alpha, int beta, int depth, Coordinates last) throws TimeOutException{
-		if(System.currentTimeMillis() >= timeout) throw new TimeOutException();
-		if (depth == 0) return new Move(null,eval(gb,color,null));
-		
-		ArrayList<Coordinates> currentPossibleMoves = getCurrentPossibleMoves(gb.clone(),Utils.other(color));
-		if(currentPossibleMoves.isEmpty()){
-			if(gb.isMoveAvailable(color)){
-				return new Move(null,(max(gb,alpha,beta,depth -1,null)).value);
-			}
-			else
-				return new Move(null,eval(gb,color,null));
+
+	private Move min(GameBoard gb, int alpha, int beta, int depth, Coordinates last) throws TimeOutException
+	{
+		if (System.currentTimeMillis() >= timeout)
+			throw new TimeOutException();
+		if (depth == 0)
+			return new Move(null, eval(gb, color, null));
+
+		ArrayList<Coordinates> currentPossibleMoves = getCurrentPossibleMoves(gb.clone(), Utils.other(color));
+		if (currentPossibleMoves.isEmpty())
+		{
+			if (gb.isMoveAvailable(color))
+			{
+				return new Move(null, (max(gb, alpha, beta, depth - 1, null)).value);
+			} else
+				return new Move(null, eval(gb, color, null));
 		}
-		Move best = new Move(null,Integer.MAX_VALUE);
-		for(Coordinates coord: currentPossibleMoves){
+		Move best = new Move(null, Integer.MAX_VALUE);
+		for (Coordinates coord : currentPossibleMoves)
+		{
 			GameBoard newGB = gb.clone();
 			newGB.checkMove(Utils.other(color), coord);
 			newGB.makeMove(Utils.other(color), coord);
-			Move result = max(newGB,alpha,beta,depth-1,coord);
+			Move result = max(newGB, alpha, beta, depth - 1, coord);
 			beta = Math.min(beta, result.value);
-			
-			if(result.value < best.value){
+
+			if (result.value < best.value)
+			{
 				best.coord = coord;
 				best.value = result.value;
 			}
-			
-			if(beta <= alpha) break;
+
+			if (beta <= alpha)
+				break;
 		}
-		return new Move(best.coord,beta);
+		return new Move(best.coord, beta);
 	}
-	int eval(GameBoard gb, int playerColor, Coordinates move){
+
+	int eval(GameBoard gb, int playerColor, Coordinates move)
+	{
 		return gb.countStones(color);
 	}
-	
+
 	private ArrayList<Coordinates> getCurrentPossibleMoves(GameBoard gb, int pColor)
 	{
 		ArrayList<Coordinates> currentPossibleMoves = new ArrayList<Coordinates>();
@@ -147,16 +165,18 @@ public class TestPlayerV1 implements ReversiPlayer
 		return currentPossibleMoves;
 
 	}
+
 	private void createAllPossibleMoves()
 	{
-		for(int i=1; i<9; i++)
+		for (int i = 1; i < 9; i++)
 		{
-			for(int j=1; j<9; j++)
+			for (int j = 1; j < 9; j++)
 			{
 				possibleMoves.add(new Coordinates(i, j));
 			}
 		}
 	}
+
 	class Move
 	{
 		public Coordinates	coord;
@@ -168,6 +188,7 @@ public class TestPlayerV1 implements ReversiPlayer
 			this.value = value;
 		}
 	}
+
 	class TimeOutException extends Exception
 	{
 		private static final long serialVersionUID = 1L;
